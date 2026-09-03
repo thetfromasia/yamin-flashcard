@@ -1,0 +1,243 @@
+---
+
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Family Flashcard Deck</title>
+<style>
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f8ff; 
+    background-image: radial-gradient(#bde0fe 2px, transparent 2px);
+    background-size: 30px 30px;
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .deck-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .flashcard {
+    width: 85vw;
+    max-width: 320px;
+    min-height: 420px;
+    background-color: #ffffff;
+    border-radius: 30px;
+    border: 4px dashed #a2d2ff; 
+    box-shadow: 0 15px 30px rgba(162, 210, 255, 0.3);
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 20px;
+    margin-bottom: 20px;
+  }
+
+  .bounce {
+    animation: popBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes popBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.92) rotate(-2deg); }
+    100% { transform: scale(1); }
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .sticker-badge {
+    position: absolute;
+    top: -15px;
+    right: -10px;
+    background-color: #ffda79;
+    color: #d35400;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 2px 4px 0px rgba(211, 84, 0, 0.2);
+    transform: rotate(5deg);
+  }
+
+  .image-box {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 6px solid #e9ecef;
+    object-fit: cover;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+
+  .text-burmese {
+    font-size: 42px;
+    font-weight: 800;
+    color: #5a463e; /* Cute brown color */
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .text-english {
+    font-size: 46px;
+    font-weight: 800;
+    color: #4a6fa5; /* Academic blue color */
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .instructions {
+    text-align: center;
+    font-size: 14px;
+    color: #b0a09a;
+    margin-top: auto;
+    padding-top: 20px;
+  }
+
+  /* Navigation Controls */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .nav-btn {
+    background-color: #ffffff;
+    border: 3px solid #a2d2ff;
+    color: #4a6fa5;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(162, 210, 255, 0.2);
+    transition: transform 0.1s;
+  }
+
+  .nav-btn:active {
+    transform: scale(0.95);
+  }
+
+  #counter {
+    font-size: 16px;
+    font-weight: bold;
+    color: #4a6fa5;
+  }
+</style>
+</head>
+<body>
+
+  <div class="deck-container">
+    <div class="flashcard" id="card" onclick="flipCard()">
+      <div class="sticker-badge">Unit 1: Family</div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front" class="content">
+        <img class="image-box" id="front-img" src="" alt="Family member">
+        <div class="text-burmese" id="front-text"></div>
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back" class="content hidden">
+        <img class="image-box" id="back-img" src="" alt="Family member">
+        <div class="text-english" id="back-text"></div>
+      </div>
+
+      <div class="instructions">✨ Tap the card ✨</div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="controls">
+      <button class="nav-btn" onclick="prevCard()">⬅️</button>
+      <span id="counter">1 / 12</span>
+      <button class="nav-btn" onclick="nextCard()">➡️</button>
+    </div>
+  </div>
+
+<script>
+  // site.data.family ထဲက ဒေတာတွေကို JSON အဖြစ် တိုက်ရိုက် ပြောင်းလဲယူခြင်း
+  const deck = {{ site.data.card | jsonify }};
+
+  let currentIndex = 0;
+
+  function loadCard(index) {
+    const cardData = deck[index];
+    
+    document.getElementById('front').classList.remove('hidden');
+    document.getElementById('back').classList.add('hidden');
+
+    document.getElementById('front-text').innerText = cardData.bur;
+    document.getElementById('back-text').innerText = cardData.eng;
+    
+    document.getElementById('front-img').src = cardData.img;
+    document.getElementById('back-img').src = cardData.img;
+    
+    document.getElementById('counter').innerText = (index + 1) + " / " + deck.length;
+  }
+
+  function flipCard() {
+    const card = document.getElementById('card');
+    const front = document.getElementById('front');
+    const back = document.getElementById('back'); 
+
+    card.classList.remove('bounce');
+    void card.offsetWidth; 
+    card.classList.add('bounce');
+
+    if (front.classList.contains('hidden')) {
+      front.classList.remove('hidden');
+      back.classList.add('hidden');
+    } else {
+      front.classList.add('hidden');
+      back.classList.remove('hidden');
+    }
+  }
+
+  function nextCard() {
+    currentIndex++;
+    if (currentIndex >= deck.length) {
+      currentIndex = 0; 
+    }
+    loadCard(currentIndex);
+  }
+
+  function prevCard() {
+    currentIndex--;
+    if (currentIndex < 0) {
+      currentIndex = deck.length - 1; 
+    }
+    loadCard(currentIndex);
+  }
+
+  // စတင်ချိန်တွင် ပထမဆုံး ကတ်ကို ဖော်ပြပေးခြင်း
+  loadCard(currentIndex);
+</script>
+
+</body>
+</html>
