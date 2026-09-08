@@ -1,5 +1,4 @@
 ---
-
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -48,6 +47,7 @@
     flex-direction: column;
     padding: 30px 20px;
     margin-bottom: 20px;
+    transition: background-color 0.3s ease;
   }
 
   .bounce {
@@ -86,30 +86,48 @@
     transform: rotate(5deg);
   }
 
+  /* ပုံစံအသစ်: စက်ဝိုင်းအစား လေးထောင့်ပုံစံ (Rounded Square) */
   .image-box {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    border: 6px solid #e9ecef;
+    width: 150px;
+    height: 150px;
+    border-radius: 20px; 
+    border: 4px solid #e9ecef;
     object-fit: cover;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.1);
   }
 
+  /* မြန်မာစာ (mm) ဖောင့်နှင့် စတိုင်ပြင်ဆင်ရန် */
   .text-burmese {
-    font-size: 42px;
+    font-family: 'Pyidaungsu', 'Myanmar Text', 'Padauk', sans-serif;
+    font-size: 38px;
     font-weight: 800;
-    color: #5a463e; /* Cute brown color */
+    color: #5a463e; 
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
 
+  /* အင်္ဂလိပ်စာ (en) ဖောင့်နှင့် စတိုင်ပြင်ဆင်ရန် */
   .text-english {
-    font-size: 46px;
+    font-family: 'Nunito', 'Comic Sans MS', sans-serif;
+    font-size: 42px;
     font-weight: 800;
-    color: #4a6fa5; /* Academic blue color */
+    color: #4a6fa5; 
     text-align: center;
+    margin-bottom: 5px;
+  }
+  
+  .word-type {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #636e72;
+    background-color: rgba(255, 255, 255, 0.65);
+    padding: 4px 14px;
+    border-radius: 15px;
     margin-bottom: 10px;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
 
   .instructions {
@@ -117,10 +135,9 @@
     font-size: 14px;
     color: #b0a09a;
     margin-top: auto;
-    padding-top: 20px;
+    padding-top: 15px;
   }
 
-  /* Navigation Controls */
   .controls {
     display: flex;
     align-items: center;
@@ -149,24 +166,35 @@
     font-weight: bold;
     color: #4a6fa5;
   }
+
+.bg-noun { background-color: #e0f2fe !important; }
+.bg-pronoun { background-color: #f3e8ff !important; }
+.bg-verb { background-color: #dcfce7 !important; }
+.bg-adjective { background-color: #fef08a !important; }
+.bg-adverb { background-color: #ffedd5 !important; }
+.bg-preposition { background-color: #fee2e2 !important; }
+.bg-conjunction { background-color: #fce7f3 !important; }
+.bg-interjection { background-color: #f3f4f6 !important; }
 </style>
 </head>
 <body>
 
   <div class="deck-container">
     <div class="flashcard" id="card" onclick="flipCard()">
-      <div class="sticker-badge">Unit 1: Family</div>
+      <div class="sticker-badge" id="sticker-badge">Loading...</div>
 
       <!-- FRONT: Picture and Burmese -->
       <div id="front" class="content">
-        <img class="image-box" id="front-img" src="" alt="Family member">
+        <img class="image-box" id="front-img" src="" alt="Flashcard Image">
         <div class="text-burmese" id="front-text"></div>
+        <div class="word-type" id="front-type"></div>
       </div>
 
       <!-- BACK: Picture and English -->
       <div id="back" class="content hidden">
-        <img class="image-box" id="back-img" src="" alt="Family member">
+        <img class="image-box" id="back-img" src="" alt="Flashcard Image">
         <div class="text-english" id="back-text"></div>
+        <div class="word-type" id="back-type"></div>
       </div>
 
       <div class="instructions">✨ Tap the card ✨</div>
@@ -175,28 +203,42 @@
     <!-- Navigation -->
     <div class="controls">
       <button class="nav-btn" onclick="prevCard()">⬅️</button>
-      <span id="counter">1 / 12</span>
+      <span id="counter">0 / 0</span>
       <button class="nav-btn" onclick="nextCard()">➡️</button>
     </div>
   </div>
 
 <script>
-  // site.data.family ထဲက ဒေတာတွေကို JSON အဖြစ် တိုက်ရိုက် ပြောင်းလဲယူခြင်း
   const deck = {{ site.data.card | jsonify }};
-
   let currentIndex = 0;
 
   function loadCard(index) {
+    if (!deck || deck.length === 0) return;
     const cardData = deck[index];
     
     document.getElementById('front').classList.remove('hidden');
     document.getElementById('back').classList.add('hidden');
 
-    document.getElementById('front-text').innerText = cardData.bur;
-    document.getElementById('back-text').innerText = cardData.eng;
+    document.getElementById('front-text').innerText = cardData.mm;
+    document.getElementById('back-text').innerText = cardData.en;
     
     document.getElementById('front-img').src = cardData.img;
     document.getElementById('back-img').src = cardData.img;
+
+    const wordType = cardData.type ? cardData.type : "";
+    document.getElementById('front-type').innerText = wordType;
+    document.getElementById('back-type').innerText = wordType;
+    
+    const badgeText = (cardData.unit && cardData.topic) 
+                      ? cardData.unit + ": " + cardData.topic 
+                      : "Flashcard";
+    document.getElementById('sticker-badge').innerText = badgeText;
+
+    const card = document.getElementById('card');
+    card.className = "flashcard"; 
+    if (cardData.type) {
+      card.classList.add('bg-' + cardData.type.toLowerCase());
+    }
     
     document.getElementById('counter').innerText = (index + 1) + " / " + deck.length;
   }
@@ -220,6 +262,7 @@
   }
 
   function nextCard() {
+    if (!deck || deck.length === 0) return;
     currentIndex++;
     if (currentIndex >= deck.length) {
       currentIndex = 0; 
@@ -228,6 +271,7 @@
   }
 
   function prevCard() {
+    if (!deck || deck.length === 0) return;
     currentIndex--;
     if (currentIndex < 0) {
       currentIndex = deck.length - 1; 
@@ -235,8 +279,9 @@
     loadCard(currentIndex);
   }
 
-  // စတင်ချိန်တွင် ပထမဆုံး ကတ်ကို ဖော်ပြပေးခြင်း
-  loadCard(currentIndex);
+  window.onload = function() {
+      loadCard(currentIndex);
+  }
 </script>
 
 </body>
