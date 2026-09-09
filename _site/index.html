@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Family Flashcard Deck</title>
+<title>Study Buddy's Flashcard App</title>
 <style>
   * {
     box-sizing: border-box;
@@ -66,8 +66,14 @@
     flex-grow: 1;
   }
 
+  /* Card ရဲ့ မျက်နှာစာ အရှေ့/အနောက် အဖွင့်အပိတ်အတွက် */
   .hidden {
-    display: none;
+    display: none !important;
+  }
+
+  /* Slider သဘောတရားအရ လက်ရှိမပြထားသော Card များကို ဖျောက်ထားရန် */
+  .hidden-card {
+    display: none !important;
   }
 
   .sticker-badge {
@@ -82,9 +88,9 @@
     font-size: 14px;
     box-shadow: 2px 4px 0px rgba(211, 84, 0, 0.2);
     transform: rotate(5deg);
+    z-index: 2;
   }
 
-  /* ပုံစံအသစ်: စက်ဝိုင်းအစား လေးထောင့်ပုံစံ (Rounded Square) */
   .image-box {
     width: 150px;
     height: 150px;
@@ -95,7 +101,6 @@
     box-shadow: 0 8px 16px rgba(0,0,0,0.1);
   }
 
-  /* မြန်မာစာ (mm) ဖောင့်နှင့် စတိုင်ပြင်ဆင်ရန် */
   .text-burmese {
     font-family: 'Pyidaungsu', 'Myanmar Text', 'Padauk', sans-serif;
     font-size: 38px;
@@ -105,7 +110,6 @@
     margin-bottom: 5px;
   }
 
-  /* အင်္ဂလိပ်စာ (en) ဖောင့်နှင့် စတိုင်ပြင်ဆင်ရန် */
   .text-english {
     font-family: 'Nunito', 'Comic Sans MS', sans-serif;
     font-size: 42px;
@@ -126,6 +130,31 @@
     margin-bottom: 10px;
     letter-spacing: 1px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  /* Speaker Button Style */
+  .speaker-btn {
+    font-size: 24px;
+    background: #f1f3f5;
+    border: 2px solid #dee2e6;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s, background-color 0.2s;
+  }
+
+  .speaker-btn:hover {
+    background: #e2e6ea;
+  }
+
+  .speaker-btn:active {
+    transform: scale(0.9);
   }
 
   .instructions {
@@ -178,76 +207,575 @@
 <body>
 
   <div class="deck-container">
-    <div class="flashcard" id="card" onclick="flipCard()">
-      <div class="sticker-badge" id="sticker-badge">Loading...</div>
+    
+    <!-- Liquid Tag ကိုအသုံးပြု၍ Data များကို Loop ပတ်ပြီး HTML တည်ဆောက်ခြင်း -->
+    
+    <div class="flashcard bg-noun " id="card-0" onclick="flipCard(0)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
 
       <!-- FRONT: Picture and Burmese -->
-      <div id="front" class="content">
-        <img class="image-box" id="front-img" src="" alt="Flashcard Image">
-        <div class="text-burmese" id="front-text"></div>
-        <div class="word-type" id="front-type"></div>
+      <div id="front-0" class="content">
+        <img class="image-box" src="/assets/images/flashcard/GM.jpg" alt="Flashcard Image">
+        <div class="text-burmese">အဘွား</div>
+        <div class="word-type">noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/grandmother.mp3')">🔊</div>
+        
       </div>
 
       <!-- BACK: Picture and English -->
-      <div id="back" class="content hidden">
-        <img class="image-box" id="back-img" src="" alt="Flashcard Image">
-        <div class="text-english" id="back-text"></div>
-        <div class="word-type" id="back-type"></div>
+      <div id="back-0" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/GM.jpg" alt="Flashcard Image">
+        <div class="text-english">Grandmother</div>
+        <div class="word-type">noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/grandmother.mp3')">🔊</div>
+        
       </div>
 
-      <div class="instructions">✨ Tap the card ✨</div>
+      <div class="instructions">✨ Tap the card to flip ✨</div>
     </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-1" onclick="flipCard(1)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-1" class="content">
+        <img class="image-box" src="/assets/images/flashcard/Gf.jpg" alt="Flashcard Image">
+        <div class="text-burmese">အဘိုး</div>
+        <div class="word-type">noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/grandfather.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-1" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/Gf.jpg" alt="Flashcard Image">
+        <div class="text-english">Grandfather</div>
+        <div class="word-type">noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/grandfather.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-2" onclick="flipCard(2)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-2" class="content">
+        <img class="image-box" src="/assets/images/flashcard/M.jpg" alt="Flashcard Image">
+        <div class="text-burmese">အမေ</div>
+        <div class="word-type">noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/mother.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-2" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/M.jpg" alt="Flashcard Image">
+        <div class="text-english">Mother</div>
+        <div class="word-type">noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/mother.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-3" onclick="flipCard(3)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-3" class="content">
+        <img class="image-box" src="/assets/images/flashcard/B.jpg" alt="Flashcard Image">
+        <div class="text-burmese">အစ်ကို/ညီ/မောင်</div>
+        <div class="word-type">noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/brother.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-3" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/B.jpg" alt="Flashcard Image">
+        <div class="text-english">Brother</div>
+        <div class="word-type">noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/brother.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-4" onclick="flipCard(4)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-4" class="content">
+        <img class="image-box" src="/assets/images/flashcard/S.jpg" alt="Flashcard Image">
+        <div class="text-burmese">အစ်မ/ညီမ</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/sister.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-4" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/S.jpg" alt="Flashcard Image">
+        <div class="text-english">Sister</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/sister.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-5" onclick="flipCard(5)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-5" class="content">
+        <img class="image-box" src="/assets/images/flashcard/F.jpg" alt="Flashcard Image">
+        <div class="text-burmese">အဖေ</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/father.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-5" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/F.jpg" alt="Flashcard Image">
+        <div class="text-english">Father</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/father.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-6" onclick="flipCard(6)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-6" class="content">
+        <img class="image-box" src="/assets/images/flashcard/A.jpg" alt="Flashcard Image">
+        <div class="text-burmese">အဒေါ်</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/aunt.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-6" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/A.jpg" alt="Flashcard Image">
+        <div class="text-english">Aunt</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/aunt.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-7" onclick="flipCard(7)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-7" class="content">
+        <img class="image-box" src="/assets/images/flashcard/U.jpg" alt="Flashcard Image">
+        <div class="text-burmese">ဦးလေး</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/uncle.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-7" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/U.jpg" alt="Flashcard Image">
+        <div class="text-english">Uncle</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/uncle.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-8" onclick="flipCard(8)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-8" class="content">
+        <img class="image-box" src="/assets/images/flashcard/D.jpg" alt="Flashcard Image">
+        <div class="text-burmese">သမီး</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/daughter.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-8" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/D.jpg" alt="Flashcard Image">
+        <div class="text-english">Daughter</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/daughter.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-9" onclick="flipCard(9)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-9" class="content">
+        <img class="image-box" src="/assets/images/flashcard/Son.jpg" alt="Flashcard Image">
+        <div class="text-burmese">သား</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/son.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-9" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/Son.jpg" alt="Flashcard Image">
+        <div class="text-english">Son</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/son.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-10" onclick="flipCard(10)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-10" class="content">
+        <img class="image-box" src="/assets/images/flashcard/Siblings.jpg" alt="Flashcard Image">
+        <div class="text-burmese">မွေးချင်းမောင်နှမများ</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/siblings.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-10" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/Siblings.jpg" alt="Flashcard Image">
+        <div class="text-english">Siblings</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/siblings.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-11" onclick="flipCard(11)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-11" class="content">
+        <img class="image-box" src="/assets/images/flashcard/C.jpg" alt="Flashcard Image">
+        <div class="text-burmese">ဝမ်းကွဲဆွေမျိုးများ</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/cousins.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-11" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/C.jpg" alt="Flashcard Image">
+        <div class="text-english">Cousins</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/cousins.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-12" onclick="flipCard(12)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-12" class="content">
+        <img class="image-box" src="/assets/images/flashcard/W.jpg" alt="Flashcard Image">
+        <div class="text-burmese">ဇနီး/မယား</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/wife.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-12" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/W.jpg" alt="Flashcard Image">
+        <div class="text-english">Wife</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/wife.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-13" onclick="flipCard(13)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-13" class="content">
+        <img class="image-box" src="/assets/images/flashcard/H.jpg" alt="Flashcard Image">
+        <div class="text-burmese">ခင်ပွန်း/ယောကျာ်း</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/husband.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-13" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/H.jpg" alt="Flashcard Image">
+        <div class="text-english">Husband</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/husband.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-14" onclick="flipCard(14)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-14" class="content">
+        <img class="image-box" src="/assets/images/flashcard/H&W.jpg" alt="Flashcard Image">
+        <div class="text-burmese">မိဘများ</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/parents.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-14" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/H&W.jpg" alt="Flashcard Image">
+        <div class="text-english">Parents</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/parents.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-15" onclick="flipCard(15)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-15" class="content">
+        <img class="image-box" src="/assets/images/flashcard/Nephew.jpg" alt="Flashcard Image">
+        <div class="text-burmese">တူ</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/nephew.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-15" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/Nephew.jpg" alt="Flashcard Image">
+        <div class="text-english">Nephew</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/nephew.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
+    <div class="flashcard bg-noun hidden-card" id="card-16" onclick="flipCard(16)">
+      
+      <div class="sticker-badge">
+        
+          Unit 1: Family
+        
+      </div>
+
+      <!-- FRONT: Picture and Burmese -->
+      <div id="front-16" class="content">
+        <img class="image-box" src="/assets/images/flashcard/Niece.jpg" alt="Flashcard Image">
+        <div class="text-burmese">တူမ</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/niece.mp3')">🔊</div>
+        
+      </div>
+
+      <!-- BACK: Picture and English -->
+      <div id="back-16" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/Niece.jpg" alt="Flashcard Image">
+        <div class="text-english">Niece</div>
+        <div class="word-type">Noun</div>
+        
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/niece.mp3')">🔊</div>
+        
+      </div>
+
+      <div class="instructions">✨ Tap the card to flip ✨</div>
+    </div>
+    
 
     <!-- Navigation -->
     <div class="controls">
       <button class="nav-btn" onclick="prevCard()">⬅️</button>
-      <span id="counter">0 / 0</span>
+      <span id="counter">1 / 17</span>
       <button class="nav-btn" onclick="nextCard()">➡️</button>
     </div>
   </div>
 
 <script>
-  const deck = [{"en":"Grandmother","mm":"အဘွား","img":"https://images.unsplash.com/photo-1544098281-073ae35c98b0?auto=format&fit=crop&w=400&q=80","type":"noun","unit":"Unit 1","topic":"Family"},{"en":"Grandfather","mm":"အဘိုး","img":"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80","type":"noun","unit":"Unit 1","topic":"Family"},{"en":"Mother","mm":"အမေ","img":"https://images.unsplash.com/photo-1554151228-14d9def656e4?auto=format&fit=crop&w=400&q=80","type":"noun","unit":"Unit 1","topic":"Family"},{"en":"Loving","mm":"မေတ္တာရှိသော","img":"https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=400&q=80","type":"adjective","unit":"Unit 2","topic":"Emotion"},{"en":"Protect","mm":"ကာကွယ်စောင့်ရှောက်သည်","img":"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=400&q=80","type":"verb","unit":"Unit 3","topic":"Guard"}];
   let currentIndex = 0;
+  // Jekyll ဘက်မှ Card အရေအတွက်ကို ယူခြင်း
+  const totalCards = 17;
+  let currentAudio = null;
 
-  function loadCard(index) {
-    if (!deck || deck.length === 0) return;
-    const cardData = deck[index];
-    
-    document.getElementById('front').classList.remove('hidden');
-    document.getElementById('back').classList.add('hidden');
-
-    document.getElementById('front-text').innerText = cardData.mm;
-    document.getElementById('back-text').innerText = cardData.en;
-    
-    document.getElementById('front-img').src = cardData.img;
-    document.getElementById('back-img').src = cardData.img;
-
-    const wordType = cardData.type ? cardData.type : "";
-    document.getElementById('front-type').innerText = wordType;
-    document.getElementById('back-type').innerText = wordType;
-    
-    const badgeText = (cardData.unit && cardData.topic) 
-                      ? cardData.unit + ": " + cardData.topic 
-                      : "Flashcard";
-    document.getElementById('sticker-badge').innerText = badgeText;
-
-    const card = document.getElementById('card');
-    card.className = "flashcard"; 
-    if (cardData.type) {
-      card.classList.add('bg-' + cardData.type.toLowerCase());
-    }
-    
-    document.getElementById('counter').innerText = (index + 1) + " / " + deck.length;
+  function updateCounter() {
+    document.getElementById('counter').innerText = (currentIndex + 1) + " / " + totalCards;
   }
 
-  function flipCard() {
-    const card = document.getElementById('card');
-    const front = document.getElementById('front');
-    const back = document.getElementById('back'); 
+  function showCard(index) {
+    // Card အားလုံးကို အရင်ဖျောက်ပါမယ်
+    const allCards = document.querySelectorAll('.flashcard');
+    allCards.forEach(card => card.classList.add('hidden-card'));
+
+    // ရွေးချယ်ထားတဲ့ Index နဲ့ကိုက်ညီတဲ့ Card ကိုပဲ ပြန်ဖော်ပါမယ်
+    const activeCard = document.getElementById('card-' + index);
+    if (activeCard) {
+      activeCard.classList.remove('hidden-card');
+    }
+    updateCounter();
+  }
+
+  function flipCard(index) {
+    const card = document.getElementById('card-' + index);
+    const front = document.getElementById('front-' + index);
+    const back = document.getElementById('back-' + index); 
 
     card.classList.remove('bounce');
-    void card.offsetWidth; 
+    void card.offsetWidth; // Trigger reflow 
     card.classList.add('bounce');
 
     if (front.classList.contains('hidden')) {
@@ -259,26 +787,35 @@
     }
   }
 
+  function playAudio(event, audioPath) {
+    // Speaker ကိုနှိပ်လိုက်ချိန်တွင် Card ပြောင်းပြန်မလန်သွားစေရန် တားဆီးခြင်း
+    event.stopPropagation();
+    
+    // အရင်ဖွင့်ထားတဲ့အသံရှိရင် ရပ်ပြီး အစကပြန်စရန်
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0; 
+    }
+    currentAudio = new Audio(audioPath);
+    currentAudio.play().catch(error => console.error("Audio playback error:", error));
+  }
+
   function nextCard() {
-    if (!deck || deck.length === 0) return;
+    if (totalCards === 0) return;
     currentIndex++;
-    if (currentIndex >= deck.length) {
+    if (currentIndex >= totalCards) {
       currentIndex = 0; 
     }
-    loadCard(currentIndex);
+    showCard(currentIndex);
   }
 
   function prevCard() {
-    if (!deck || deck.length === 0) return;
+    if (totalCards === 0) return;
     currentIndex--;
     if (currentIndex < 0) {
-      currentIndex = deck.length - 1; 
+      currentIndex = totalCards - 1; 
     }
-    loadCard(currentIndex);
-  }
-
-  window.onload = function() {
-      loadCard(currentIndex);
+    showCard(currentIndex);
   }
 </script>
 

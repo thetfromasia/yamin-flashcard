@@ -68,8 +68,14 @@
     flex-grow: 1;
   }
 
+  /* Card ရဲ့ မျက်နှာစာ အရှေ့/အနောက် အဖွင့်အပိတ်အတွက် */
   .hidden {
-    display: none;
+    display: none !important;
+  }
+
+  /* Slider သဘောတရားအရ လက်ရှိမပြထားသော Card များကို ဖျောက်ထားရန် */
+  .hidden-card {
+    display: none !important;
   }
 
   .sticker-badge {
@@ -84,9 +90,9 @@
     font-size: 14px;
     box-shadow: 2px 4px 0px rgba(211, 84, 0, 0.2);
     transform: rotate(5deg);
+    z-index: 2;
   }
 
-  /* ပုံစံအသစ်: စက်ဝိုင်းအစား လေးထောင့်ပုံစံ (Rounded Square) */
   .image-box {
     width: 150px;
     height: 150px;
@@ -97,7 +103,6 @@
     box-shadow: 0 8px 16px rgba(0,0,0,0.1);
   }
 
-  /* မြန်မာစာ (mm) ဖောင့်နှင့် စတိုင်ပြင်ဆင်ရန် */
   .text-burmese {
     font-family: 'Pyidaungsu', 'Myanmar Text', 'Padauk', sans-serif;
     font-size: 38px;
@@ -107,7 +112,6 @@
     margin-bottom: 5px;
   }
 
-  /* အင်္ဂလိပ်စာ (en) ဖောင့်နှင့် စတိုင်ပြင်ဆင်ရန် */
   .text-english {
     font-family: 'Nunito', 'Comic Sans MS', sans-serif;
     font-size: 42px;
@@ -128,6 +132,31 @@
     margin-bottom: 10px;
     letter-spacing: 1px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  /* Speaker Button Style */
+  .speaker-btn {
+    font-size: 24px;
+    background: #f1f3f5;
+    border: 2px solid #dee2e6;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s, background-color 0.2s;
+  }
+
+  .speaker-btn:hover {
+    background: #e2e6ea;
+  }
+
+  .speaker-btn:active {
+    transform: scale(0.9);
   }
 
   .instructions {
@@ -180,76 +209,81 @@
 <body>
 
   <div class="deck-container">
-    <div class="flashcard" id="card" onclick="flipCard()">
-      <div class="sticker-badge" id="sticker-badge">Loading...</div>
+    
+    <!-- Liquid Tag ကိုအသုံးပြု၍ Data များကို Loop ပတ်ပြီး HTML တည်ဆောက်ခြင်း -->
+    {% for card in site.data.card %}
+    <div class="flashcard bg-{{ card.type | downcase }} {% if forloop.index0 != 0 %}hidden-card{% endif %}" id="card-{{ forloop.index0 }}" onclick="flipCard({{ forloop.index0 }})">
+      
+      <div class="sticker-badge">
+        {% if card.unit and card.topic %}
+          {{ card.unit }}: {{ card.topic }}
+        {% else %}
+          Flashcard
+        {% endif %}
+      </div>
 
       <!-- FRONT: Picture and Burmese -->
-      <div id="front" class="content">
-        <img class="image-box" id="front-img" src="" alt="Flashcard Image">
-        <div class="text-burmese" id="front-text"></div>
-        <div class="word-type" id="front-type"></div>
+      <div id="front-{{ forloop.index0 }}" class="content">
+        <img class="image-box" src="/assets/images/flashcard/{{ card.img }}" alt="Flashcard Image">
+        <div class="text-burmese">{{ card.mm }}</div>
+        <div class="word-type">{{ card.type }}</div>
+        {% if card.voice %}
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/{{ card.voice }}')">🔊</div>
+        {% endif %}
       </div>
 
       <!-- BACK: Picture and English -->
-      <div id="back" class="content hidden">
-        <img class="image-box" id="back-img" src="" alt="Flashcard Image">
-        <div class="text-english" id="back-text"></div>
-        <div class="word-type" id="back-type"></div>
+      <div id="back-{{ forloop.index0 }}" class="content hidden">
+        <img class="image-box" src="/assets/images/flashcard/{{ card.img }}" alt="Flashcard Image">
+        <div class="text-english">{{ card.en }}</div>
+        <div class="word-type">{{ card.type }}</div>
+        {% if card.voice %}
+        <div class="speaker-btn" onclick="playAudio(event, '/assets/mp3/flashcard/{{ card.voice }}')">🔊</div>
+        {% endif %}
       </div>
 
-      <div class="instructions">✨ Tap the card ✨</div>
+      <div class="instructions">✨ Tap the card to flip ✨</div>
     </div>
+    {% endfor %}
 
     <!-- Navigation -->
     <div class="controls">
       <button class="nav-btn" onclick="prevCard()">⬅️</button>
-      <span id="counter">0 / 0</span>
+      <span id="counter">1 / {{ site.data.card | size }}</span>
       <button class="nav-btn" onclick="nextCard()">➡️</button>
     </div>
   </div>
 
 <script>
-  const deck = {{ site.data.card | jsonify }};
   let currentIndex = 0;
+  // Jekyll ဘက်မှ Card အရေအတွက်ကို ယူခြင်း
+  const totalCards = {{ site.data.card | size }};
+  let currentAudio = null;
 
-  function loadCard(index) {
-    if (!deck || deck.length === 0) return;
-    const cardData = deck[index];
-    
-    document.getElementById('front').classList.remove('hidden');
-    document.getElementById('back').classList.add('hidden');
-
-    document.getElementById('front-text').innerText = cardData.mm;
-    document.getElementById('back-text').innerText = cardData.en;
-    
-    document.getElementById('front-img').src = cardData.img;
-    document.getElementById('back-img').src = cardData.img;
-
-    const wordType = cardData.type ? cardData.type : "";
-    document.getElementById('front-type').innerText = wordType;
-    document.getElementById('back-type').innerText = wordType;
-    
-    const badgeText = (cardData.unit && cardData.topic) 
-                      ? cardData.unit + ": " + cardData.topic 
-                      : "Flashcard";
-    document.getElementById('sticker-badge').innerText = badgeText;
-
-    const card = document.getElementById('card');
-    card.className = "flashcard"; 
-    if (cardData.type) {
-      card.classList.add('bg-' + cardData.type.toLowerCase());
-    }
-    
-    document.getElementById('counter').innerText = (index + 1) + " / " + deck.length;
+  function updateCounter() {
+    document.getElementById('counter').innerText = (currentIndex + 1) + " / " + totalCards;
   }
 
-  function flipCard() {
-    const card = document.getElementById('card');
-    const front = document.getElementById('front');
-    const back = document.getElementById('back'); 
+  function showCard(index) {
+    // Card အားလုံးကို အရင်ဖျောက်ပါမယ်
+    const allCards = document.querySelectorAll('.flashcard');
+    allCards.forEach(card => card.classList.add('hidden-card'));
+
+    // ရွေးချယ်ထားတဲ့ Index နဲ့ကိုက်ညီတဲ့ Card ကိုပဲ ပြန်ဖော်ပါမယ်
+    const activeCard = document.getElementById('card-' + index);
+    if (activeCard) {
+      activeCard.classList.remove('hidden-card');
+    }
+    updateCounter();
+  }
+
+  function flipCard(index) {
+    const card = document.getElementById('card-' + index);
+    const front = document.getElementById('front-' + index);
+    const back = document.getElementById('back-' + index); 
 
     card.classList.remove('bounce');
-    void card.offsetWidth; 
+    void card.offsetWidth; // Trigger reflow 
     card.classList.add('bounce');
 
     if (front.classList.contains('hidden')) {
@@ -261,26 +295,35 @@
     }
   }
 
+  function playAudio(event, audioPath) {
+    // Speaker ကိုနှိပ်လိုက်ချိန်တွင် Card ပြောင်းပြန်မလန်သွားစေရန် တားဆီးခြင်း
+    event.stopPropagation();
+    
+    // အရင်ဖွင့်ထားတဲ့အသံရှိရင် ရပ်ပြီး အစကပြန်စရန်
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0; 
+    }
+    currentAudio = new Audio(audioPath);
+    currentAudio.play().catch(error => console.error("Audio playback error:", error));
+  }
+
   function nextCard() {
-    if (!deck || deck.length === 0) return;
+    if (totalCards === 0) return;
     currentIndex++;
-    if (currentIndex >= deck.length) {
+    if (currentIndex >= totalCards) {
       currentIndex = 0; 
     }
-    loadCard(currentIndex);
+    showCard(currentIndex);
   }
 
   function prevCard() {
-    if (!deck || deck.length === 0) return;
+    if (totalCards === 0) return;
     currentIndex--;
     if (currentIndex < 0) {
-      currentIndex = deck.length - 1; 
+      currentIndex = totalCards - 1; 
     }
-    loadCard(currentIndex);
-  }
-
-  window.onload = function() {
-      loadCard(currentIndex);
+    showCard(currentIndex);
   }
 </script>
 
